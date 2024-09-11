@@ -1,0 +1,124 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['admin'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    nav{
+        background-image:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('../Admin/gasin.PNG');
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+    }
+    ul{
+        float: right;
+        list-style-type: none;
+        margin-top: 25px;
+    }
+    ul li{
+        display: inline-block;
+    }
+    ul li a{
+        text-decoration: none;
+        color: orange;
+        padding: 5px 10px;
+        border: 1px solid transparent;
+        transition: 0.5s ease;
+    }
+    ul li a:hover{
+        background-color: #fff;
+        color: #000;
+    }
+    .logo img{
+        float: left;
+        width: 150px;
+        height: auto;
+    }
+    .main{
+        max-width: 1200px;
+        margin: auto;
+    }
+    .title{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50% );
+    }
+    .title h1{
+
+        color: #fff;
+        font-size: 60px;
+
+    }
+    footer {
+        color: orange;
+        text-align: center; 
+        padding: 20px 0; 
+        position: fixed; 
+        width: 100%;
+        bottom: 0; 
+   
+    }
+    footer .main {
+        max-width: 1200px; 
+        margin: auto; 
+    }
+
+    footer span {
+        font-size: 14px; 
+        line-height: 1.5;
+    }
+
+    footer span a {
+        color: #fff; 
+        text-decoration: none; 
+    }
+
+    footer span a:hover {
+        text-decoration: underline;
+    }
+</style>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+
+<nav>
+    <div class="main">
+    <div class="logo">
+        <img src="admin logo.PNG" width="50px" height="50px">
+        </div>
+        <ul>
+            <li><a href="product.php">PRODUCT DETAILS</a></li>
+            <li><a href="order.php">ORDER DETAILS</a></li>
+            <li><a href="customer.php">CUSTOMER DETAILS</a></li>
+            <li><a href="admin_logout.php">LOGOUT</a></li>            
+            </ul>
+        </ul>
+    </div>
+    </nav>
+    <footer>
+    <div class="main">
+        <span>Copyright @2024<br/>
+            Developed by Manish chaudhary
+        </span>
+    </footer>
+    </div>
+    
+    
+</body>
+</html>
