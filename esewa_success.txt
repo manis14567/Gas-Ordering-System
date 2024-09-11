@@ -1,0 +1,54 @@
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "gasordering_db";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
+$amt = isset($_GET['amt']) ? floatval($_GET['amt']) : 0.0;
+$refId = isset($_GET['refId']) ? htmlspecialchars($_GET['refId']) : '';
+
+if ($order_id == 0 || $amt == 0.0 || empty($refId)) {
+    die("Invalid transaction details.");
+}
+
+$url = "https://uat.esewa.com.np/epay/transrec";
+$data = [
+    'amt' => $amt,
+    'rid' => $refId,
+    'pid' => "ORDER_$order_id",
+    'scd' => 'EPAYTEST'
+];
+
+$curl = curl_init($url);
+curl_setopt($curl, CURLOPT_POST, true);
+curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($curl);
+curl_close($curl);
+
+if (strpos($response, "Success") !== false) {
+    $sql = "UPDATE payments SET payment_status = 'success' WHERE order_id = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt === false) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    $stmt->bind_param("i", $order_id);
+    if ($stmt->execute()) {
+        echo "<p>Payment Successful!</p>";
+    } else {
+        echo "<p>Error: Could not update payment status.</p>";
+    }
+    $stmt->close();
+} else {
+    echo "<p>Payment Validation Failed!</p>";
+}
+
+$conn->close();
+?>

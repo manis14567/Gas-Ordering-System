@@ -1,0 +1,126 @@
+<?php
+$error_message = isset($_GET['error_message']) ? htmlspecialchars($_GET['error_message']) : '';
+
+if (!empty($error_message)) {
+    echo "<p>Error: $error_message</p>";
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eSewa Payment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+            text-align: left;
+        }
+        input[type="text"],
+        input[type="submit"],
+        button[type="button"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+        }
+        input[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+        button[type="button"] {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button[type="button"]:hover {
+            background-color: #c82333;
+        }
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 20px;
+                width: 90%;
+            }
+            input[type="text"],
+            input[type="submit"],
+            button[type="button"] {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>eSewa Payment</h2>
+        <form action="https://uat.esewa.com.np/epay/main" method="POST">
+            <input type="hidden" name="tAmt" value="<?php echo htmlspecialchars($_GET['total_price'] ?? ''); ?>">
+            <input type="hidden" name="amt" value="<?php echo htmlspecialchars($_GET['total_price'] ?? ''); ?>">
+            <input type="hidden" name="txAmt" value="0">
+            <input type="hidden" name="psc" value="0">
+            <input type="hidden" name="pdc" value="0">
+            <input type="hidden" name="scd" value="EPAYTEST">
+            <input type="hidden" name="pid" value="<?php echo htmlspecialchars($_GET['order_id'] ?? ''); ?>">
+            <input type="hidden" name="su" value="http://localhost/esewa_success.php?q=su">
+            <input type="hidden" name="fu" value="http://localhost/esewa_failure.php?q=fu">
+            <label for="amount">Amount:</label>
+            <input type="text" id="amount" name="amount" value="<?php echo htmlspecialchars($_GET['total_price'] ?? ''); ?>" readonly>
+            <label for="product">Product:</label>
+            <input type="text" id="product" name="product" value="<?php echo htmlspecialchars($_GET['product_name'] ?? ''); ?>" readonly>
+            <input type="submit" value="Pay with eSewa">
+        </form>
+        <form>
+            <button type="button" onclick="window.location.href='product.php';">Cancel</button>
+        </form>
+    </div>
+</body>
+</html>

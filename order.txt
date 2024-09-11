@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order</title>
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: crimson;
+            margin: 0;
+            padding: 0;
+        }
+
+        
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            float: left;
+            width: 150px;
+            height: auto;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li:last-child {
+            margin-right: 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            padding: 5px 10px;
+            border: 1px solid transparent;
+            transition: 0.5s ease;
+        }
+
+        nav ul li a:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        /* Order container styles */
+        .order-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: left;
+            margin: 20px auto;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="submit"],
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        button[type="submit"] {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #c82333;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../Home/gags.jpg" alt="Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="user_index.php">HOME</a></li>
+                <li><a href="product.php">PRODUCT</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="order-container">
+        <h2>Place an Order</h2>
+
+        <?php
+        
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            
+            $servername = "localhost";
+            $username = "root";
+            $password = "";
+            $dbname = "gasordering_db";
+
+            
+            $conn = new mysqli($servername, $username, $password, $dbname);
+
+            
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+
+            
+            $productId = isset($_POST['productId']) ? intval($_POST['productId']) : 0;
+            $product_name = isset($_POST['product_name']) ? htmlspecialchars($_POST['product_name']) : '';
+            $product_price = isset($_POST['product_price']) ? floatval($_POST['product_price']) : 0.0;
+            $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
+            $user_id = 1; 
+            $order_date = date("Y-m-d");
+
+            
+            $total_price = $quantity * $product_price;
+
+            
+            if ($productId == 0 || empty($product_name) || $product_price == 0.0) {
+                echo "<p>Invalid product details.</p>";
+                exit;
+            }
+            if ($quantity < 1 || $quantity > 5) {
+                echo "<p>Invalid quantity. Must be between 1 and 5.</p>";
+                exit;
+            }
+
+            
+            $stmt = $conn->prepare("INSERT INTO orders (productId, user_id, product_name, quantity, total_price, order_date, status) VALUES (?, ?, ?, ?, ?, ?, 'pending')");
+            if ($stmt === false) {
+                die("Error preparing statement: " . $conn->error);
+            }
+            $stmt->bind_param("iisids", $productId, $user_id, $product_name, $quantity, $total_price, $order_date);
+            if ($stmt->execute()) {
+                
+                header("Location: esewa.php?order_id={$stmt->insert_id}&total_price={$total_price}&product_name={$product_name}");
+                exit();
+            } else {
+                echo "<p>Error: Could not place the order.</p>";
+            }
+            $stmt->close();
+            $conn->close();
+        }
+        ?>
+
+        
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <input type="hidden" name="productId" value="<?php echo htmlspecialchars($_GET['productId'] ?? ''); ?>">
+            <input type="hidden" name="product_price" value="<?php echo htmlspecialchars($_GET['product_price'] ?? ''); ?>">
+            <label for="product_name">Product Name:</label>
+            <input type="text" id="product_name" name="product_name" value="<?php echo htmlspecialchars($_GET['product_name'] ?? ''); ?>" readonly>
+            <label for="product_price_display">Product Price:</label>
+            <input type="text" id="product_price_display" name="product_price_display" value="<?php echo htmlspecialchars($_GET['product_price'] ?? ''); ?>" readonly>
+            <label for="quantity">Quantity (1-5):</label>
+            <input type="number" id="quantity" name="quantity" min="1" max="5" value="1" required>
+            <label for="order_date">Order Date:</label>
+            <input type="date" id="order_date" name="order_date" value="<?php echo date('Y-m-d'); ?>" min="<?php echo date('Y-m-d'); ?>" required>
+            <input type="submit" value="Place Order">
+        </form>
+    </div>
+</body>
+</html>
+

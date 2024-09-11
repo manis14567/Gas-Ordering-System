@@ -1,0 +1,161 @@
+<?php
+session_start();
+
+
+if (!isset($_SESSION["username"])) {
+    header("Location: login.php");
+    exit();
+}
+
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        nav {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../Home/background.jpg');
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+        }
+
+        ul {
+            float: right;
+            list-style-type: none;
+            margin-top: 25px;
+        }
+
+        ul li {
+            display: inline-block;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: orange;
+            padding: 5px 10px;
+            border: 1px solid transparent;
+            transition: 0.5s ease;
+        }
+
+        ul li a:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        .logo img {
+            float: left;
+            width: 150px;
+            height: auto;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .title h1 {
+            color: #fff;
+            font-size: 60px;
+        }
+
+        .button {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn {
+            border: 1px solid #fff;
+            padding: 5px 10px;
+            color: #fff;
+            text-decoration: none;
+            transition: 0.5s ease;
+        }
+
+        .btn:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        footer {
+            
+            color: orange; 
+            text-align: center; 
+            padding: 20px 0;
+            position: fixed; 
+            width: 100%; 
+            bottom: 0;
+        }
+
+        footer .main {
+            max-width: 1200px; 
+            margin: auto; 
+        }
+
+        footer span {
+            font-size: 14px; 
+            line-height: 1.5; 
+        }
+
+        footer span a {
+            color: #fff; 
+            text-decoration: none; 
+        }
+
+        footer span a:hover {
+            text-decoration: underline; 
+        }
+
+        
+    </style>
+    <title>Gas Booking System</title>
+</head>
+<body>
+    <nav>
+        <div class="main">
+            <div class="logo">
+                <img src="../Home/gags.jpg" width="50px" height="50px">
+            </div>
+            <ul>
+                <li><a href="user_index.php">Home</a></li>
+                <li><a href="product.php">Product</a></li>
+                <li><a href="logout.php">Logout</a></li>
+                <li><a href="view_orders.php">View Orders</a></li>
+                <li><a href="setting.php"></a>Setting</li>
+                
+            </ul>
+        </div> 
+        <div class="title">
+            <h1>Order From Home</h1>
+        </div>
+        <div class="button">
+            <a href="learnmore.php" class="btn">Learn More</a>
+        </div>
+    </nav>
+    <footer>
+        <div class="main">
+            <span>Copyright @2024<br/>
+                Developed by Manish chaudhary
+            </span>
+        </div>
+    </footer>
+</body>
+</html>
+
+

@@ -1,0 +1,8 @@
+<?php
+$order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
+
+if ($order_id == 0) {
+    die("Invalid transaction details.");
+}
+echo "<p>Payment Failed! Please try again.</p>";
+?>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Orders</title>
+    <style>
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: crimson;
+            margin: 0;
+            padding: 0;
+        }
+
+        
+        header {
+            background-color: #333; 
+            color: #fff;
+            padding: 10px 20px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            float: left;
+            width: 150px;
+            height: auto; 
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li:last-child {
+            margin-right: 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            padding: 5px 10px;
+            border: 1px solid transparent;
+            transition: 0.5s ease;
+        }
+
+        nav ul li a:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+        
+        .orders-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin: 20px auto; 
+            text-align: left;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        .no-orders {
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../Home/gags.jpg" alt="Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="user_index.php">HOME</a></li>
+                <li><a href="product.php">PRODUCT</a></li>
+                <li><a href="view_orders.php">VIEW ORDERS</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="orders-container">
+        <h2>Your Orders</h2>
+
+        <?php
+       
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "gasordering_db";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        
+        $userId = 1;
+
+        
+        $sql = "SELECT productId, product_name, quantity, total_price, order_date, status FROM orders WHERE user_id = ?";
+        $stmt = $conn->prepare($sql);
+        if ($stmt === false) {
+            die("Error preparing statement: " . $conn->error);
+        }
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            echo "<table>";
+            echo "<tr><th>Product ID</th><th>Product Name</th><th>Quantity</th><th>Total Price</th><th>Order Date</th><th>Status</th></tr>";
+
+            
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($row["productId"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["product_name"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["quantity"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["total_price"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["order_date"]) . "</td>";
+                echo "<td>" . htmlspecialchars($row["status"]) . "</td>";
+                echo "</tr>";
+            }
+
+            echo "</table>";
+        } else {
+            echo "<p class='no-orders'>You have no orders.</p>";
+        }
+
+        $stmt->close();
+        $conn->close();
+        ?>
+    </div>
+</body>
+</html>

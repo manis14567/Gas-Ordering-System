@@ -1,0 +1,43 @@
+<?php
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "gasordering_db";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+
+$fullname = $_POST['fullname'];
+$address = $_POST['address'];
+$product = $_POST['product'];
+$quantity = $_POST['quantity'];
+$product_price = $_POST['product_price'];
+$amount = $_POST["amount"];
+$contact = $_POST['contact'];
+$order_date = $_POST['order_date'];
+$status = $_POST['status'];  
+
+
+$amount = $quantity * $product_price;
+
+
+$sql = "INSERT INTO orders (fullname, address, product, quantity, product_price, amount, contact, order_date, status) 
+        VALUES ('$fullname', '$address', '$product', '$quantity', '$product_price','$amount', '$contact', '$order_date', '$status')";
+
+
+if ($conn->query($sql) === TRUE) {
+    echo "Order placed successfully";
+    header("Location:esewa.php");
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+
+
+$conn->close();
+?>

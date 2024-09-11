@@ -1,0 +1,56 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "gasordering_db";
+
+  
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    
+    $productId = intval($_POST['productId']);
+    $productName = htmlspecialchars(trim($_POST['product_name']));
+    $quantity = intval($_POST['quantity']);
+    $productPrice = floatval($_POST['product_price']);
+    $userId = intval($_POST['user_id']);
+    $orderDate = date("Y-m-d H:i:s");
+
+   
+    $totalPrice = $productPrice * $quantity;
+
+    
+    if ($quantity < 1 || $quantity > 5) {
+        die("Invalid quantity. Must be between 1 and 5.");
+    }
+    if (empty($productName) || $productPrice <= 0 || $productId <= 0 || $userId <= 0) {
+        die("Invalid product or user details.");
+    }
+
+   
+    $stmt = $conn->prepare("INSERT INTO orders (productId, user_id, product_name, quantity, total_price, order_date, status) VALUES (?, ?, ?, ?, ?, ?, 'pending')");
+    if ($stmt === false) {
+        die("Error preparing statement: " . $conn->error);
+    }
+    $stmt->bind_param("iisids", $productId, $userId, $productName, $quantity, $totalPrice, $orderDate);
+
+    
+    if ($stmt->execute()) {
+        echo "<p>Order placed successfully</p>";
+        header("Location: payments.php");
+    } else {
+        echo "<p>Error: " . $stmt->error . "</p>";
+    }
+
+    $stmt->close();
+    $conn->close();
+} else {
+    echo "<p>Invalid request method.</p>";
+}
+?>
