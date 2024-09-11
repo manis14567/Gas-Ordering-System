@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+</head>
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        input[type="submit"],
+        input[type="checkbox"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .back-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+<body>
+    
+
+    <?php
+   
+    $servername = "localhost";  
+    $username = "root";       
+    $password = "";           
+    $dbname = "gasordering_db";  
+
+    
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        
+        $productName = htmlspecialchars($_POST['product_name']);
+        $quantity = intval($_POST['quantity']);
+        $productPrice = floatval($_POST['product_price']);
+        
+        
+        if ($productPrice < 1500) {
+            echo "<p>Error: Product price cannot be less than 1500.</p>";
+        } else {
+           
+            $imagePath = "";
+            if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] == UPLOAD_ERR_OK) {
+                $uploadDir = 'uploads/';
+                
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $imagePath = $uploadDir . basename($_FILES['image_path']['name']);
+                move_uploaded_file($_FILES['image_path']['tmp_name'], $imagePath);
+            }
+
+                       $availability = isset($_POST['availability']) ? 1 : 0;
+            $stmt = $conn->prepare("INSERT INTO products (product_name, quantity, product_price, image_path, availability) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("sidsi", $productName, $quantity, $productPrice, $imagePath, $availability);
+            if ($stmt->execute()) {
+                echo "<p>New product added successfully</p>";
+            } else {
+                echo "<p>Error: " . $stmt->error . "</p>";
+            }
+            $stmt->close();
+        }
+    }
+    $conn->close();
+    ?>
+
+    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+        <label for="product_name">Product Name:</label>
+        <input type="text" id="product_name" name="product_name" required><br><br>
+        
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" required min="1" max="30"><br><br>
+        
+        <label for="product_price">Product Price:</label>
+        <input type="text" id="product_price" name="product_price" required><br><br>
+        
+        <label for="image_path">Image Path:</label>
+        <input type="file" id="image_path" name="image_path"  required><br><br>
+        
+        <label for="availability">Availability:</label>
+        <input type="checkbox" id="availability" name="availability" value="1" checked  required><br><br>
+        
+        <input type="submit" value="Add Product">
+        <button class="back-button" onclick="window.history.back()">Back</button>
+        
+    </form>
+</body>
+</html>
