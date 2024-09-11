@@ -1,0 +1,98 @@
+<?php
+
+include('dbcus_connection.php');
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    $username = $_POST['username'];
+    $contact = $_POST['contact'];
+    $email = $_POST['email'];
+    
+
+    
+    $sql = "INSERT INTO tbl_user (username, contact, email) VALUES ('$username', '$contact', '$email')";
+
+    
+    if (mysqli_query($conn, $sql)) {
+        echo "New customer added successfully!";
+    } else {
+        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+    }
+}
+
+
+mysqli_close($conn);
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Customer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: darkblue;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <label for="username">Username:</label>
+        <input type="text" name="username" required>
+
+        <label for="contact">Contact:</label>
+        <input type="text" name="contact">
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" required>
+
+        <input type="submit" value="Add Customer">
+    </form>
+</body>
+</html>
